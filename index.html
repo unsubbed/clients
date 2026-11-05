@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- No outside requests: no analytics, no CDNs, no fonts. Files stay on this device. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Unsubbed Clients · Unsubbed</title>
+  <meta name="description" content="A free alternative to HoneyBook and Dubsado. Proposals, contracts and invoices as PDFs, made in your browser; your client details never leave your device.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="kit.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="u-bar">
+    <a class="u-brand" href="./">
+      <img src="logo.svg" alt=""><span data-app-name>Unsubbed Clients</span>
+    </a>
+    <button class="u-btn" data-import title="Open a file">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 15V3m0 0-4 4m4-4 4 4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+      <span class="label">Open</span>
+    </button>
+    <button class="u-btn" data-export title="Save a copy to your device">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+      <span class="label">Save</span>
+    </button>
+    <button class="u-btn icon" data-settings title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+    </button>
+    <a class="u-btn support" href="https://ko-fi.com/unsubbed" target="_blank" rel="noopener" title="Support development">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
+      <span class="label">Support</span>
+    </a>
+  </header>
+
+  <main id="app" class="cl">
+    <nav class="cl-tabs" aria-label="Sections">
+      <a href="#/" data-tab="desk">Desk</a>
+      <a href="#/clients" data-tab="clients">Clients</a>
+    </nav>
+
+    <section id="v-desk" hidden>
+      <h1 class="cl-h" tabindex="-1">Your desk</h1>
+      <dl class="cl-strip" id="strip"></dl>
+      <p class="cl-nudge" id="nudge" hidden>
+        <span>Add your business details so they print on your paperwork.</span>
+        <button class="u-btn" id="nudge-btn" type="button">Add details</button>
+      </p>
+      <div class="cl-new">
+        <button class="u-btn" type="button" data-new="proposal">New proposal</button>
+        <button class="u-btn" type="button" data-new="contract">New contract</button>
+        <button class="u-btn primary" type="button" data-new="invoice">New invoice</button>
+      </div>
+      <div id="desk-empty" class="cl-empty" hidden>
+        <p><strong>No paperwork yet.</strong> Start one above, or look around with some made-up data.</p>
+        <button class="u-btn" id="example" type="button">Load an example</button>
+      </div>
+      <div id="desk-list">
+        <div class="cl-chips" id="filters" role="group" aria-label="Show"></div>
+        <table class="cl-table" id="doc-table">
+          <thead><tr><th scope="col">Number</th><th scope="col">Title</th><th scope="col">Client</th><th scope="col">Date</th><th scope="col" class="num">Amount</th><th scope="col">Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="cl-none" id="filter-none" hidden>Nothing of this kind yet.</p>
+        <div class="u-row"><button class="u-btn" id="csv" type="button">Export invoices as CSV</button></div>
+      </div>
+    </section>
+
+    <section id="v-clients" hidden>
+      <h1 class="cl-h" tabindex="-1">Clients</h1>
+      <div class="cl-book">
+        <div>
+          <button class="u-btn primary" id="add-client" type="button">Add a client</button>
+          <ul class="cl-names" id="client-list"></ul>
+          <p class="cl-none" id="client-none">Nobody here yet.</p>
+        </div>
+        <form class="u-card" id="client-form" hidden>
+          <label class="u-field"><span>Name</span><input name="name" autocomplete="off"></label>
+          <label class="u-field"><span>Company</span><input name="company" autocomplete="off"></label>
+          <div class="cl-two">
+            <label class="u-field"><span>Email</span><input name="email" type="email" autocomplete="off"></label>
+            <label class="u-field"><span>Phone</span><input name="phone" type="tel" autocomplete="off"></label>
+          </div>
+          <label class="u-field"><span>Address</span><textarea name="address" rows="3"></textarea></label>
+          <label class="u-field"><span>Notes (only you see these)</span><textarea name="notes" rows="3"></textarea></label>
+          <div class="u-row">
+            <a class="u-btn" id="client-back" hidden>Back to your document</a>
+            <button class="u-btn danger" id="del-client" type="button">Delete client</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="v-doc" hidden>
+      <h1 class="cl-h" tabindex="-1" id="doc-h"></h1>
+      <div class="cl-actions">
+        <a class="u-btn" href="#/">Back</a>
+        <button class="u-btn primary" id="pdf" type="button">Save as PDF</button>
+        <button class="u-btn" id="mail" type="button">Email draft</button>
+        <button class="u-btn" id="to-contract" type="button">Turn into contract</button>
+        <button class="u-btn" id="to-invoice" type="button">Turn into invoice</button>
+        <button class="u-btn" id="dup" type="button">Duplicate</button>
+        <button class="u-btn danger" id="del-doc" type="button">Delete</button>
+      </div>
+      <div class="cl-switch" role="group" aria-label="View">
+        <button type="button" data-pane="edit" aria-pressed="true">Edit</button>
+        <button type="button" data-pane="paper" aria-pressed="false">Paper</button>
+      </div>
+      <div class="cl-work" id="work" data-pane="edit">
+        <form class="u-card" id="doc-form">
+          <label class="u-field"><span>Client</span><select name="clientId"></select></label>
+          <label class="u-field"><span>Title</span><input name="title" autocomplete="off"></label>
+          <div class="cl-two">
+            <label class="u-field"><span>Number</span><input name="number" autocomplete="off"></label>
+            <label class="u-field"><span>Status</span><select name="status"></select></label>
+            <label class="u-field"><span>Date</span><input name="date" type="date"></label>
+            <label class="u-field" data-for="proposal"><span>Good until</span><input name="validUntil" type="date"></label>
+            <label class="u-field" data-for="invoice"><span>Due</span><input name="due" type="date"></label>
+          </div>
+          <label class="u-field" data-for="proposal"><span>What you're offering</span><textarea name="intro" rows="5" placeholder="A short note on the job and how you'll approach it"></textarea></label>
+          <div data-for="contract">
+            <label class="u-field"><span>Agreement text</span><textarea name="body" rows="14"></textarea></label>
+            <p class="u-note">A plain starting point, not legal advice. Have a lawyer check it for your work and where you live. Blanks like <code>{{client}}</code>, <code>{{business}}</code>, <code>{{date}}</code> and <code>{{total}}</code> fill in by themselves. A line starting with # prints as a heading.</p>
+          </div>
+
+          <fieldset class="cl-set">
+            <legend>What it costs</legend>
+            <div id="items"></div>
+            <button class="u-btn" id="add-item" type="button">Add a line</button>
+            <div class="cl-three">
+              <label class="u-field"><span>Discount %</span><input name="discount" type="number" min="0" max="100" step="any" inputmode="decimal"></label>
+              <label class="u-field"><span>Tax %</span><input name="tax" type="number" min="0" max="100" step="any" inputmode="decimal"></label>
+              <label class="u-field"><span>Currency</span><select name="currency"></select></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="cl-set" data-for="invoice">
+            <legend>Payment plan (optional)</legend>
+            <p class="u-note">Split the bill into parts. Leave empty to ask for it all by the due date.</p>
+            <div id="plan"></div>
+            <p class="cl-warn" id="plan-warn" role="status" hidden></p>
+            <button class="u-btn" id="add-plan" type="button">Add a part</button>
+          </fieldset>
+          <label class="u-field" data-for="invoice"><span>How to pay you</span><textarea name="payNote" rows="3" placeholder="Bank details or your payment link"></textarea></label>
+          <label class="u-field"><span>Notes on the page</span><textarea name="notes" rows="2"></textarea></label>
+
+          <div data-for="proposal contract">
+            <fieldset class="cl-set" id="sig-me-box"><legend>Your signature</legend></fieldset>
+            <fieldset class="cl-set" id="sig-client-box"><legend>Client's signature</legend></fieldset>
+            <p class="u-note">Draw here if you're both in the room, type a date to sign by name, or leave blank to sign the printed page. A drawn signature has no audit trail; for high-stakes deals use a dedicated signing service.</p>
+          </div>
+        </form>
+        <article class="paper" id="paper" aria-label="Preview of the page"></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="u-foot">
+    Free forever. <a href="https://ko-fi.com/unsubbed" target="_blank" rel="noopener">Support development → ko-fi.com/unsubbed</a>
+    <br>Open source under AGPL-3.0 · Your files never leave your device.
+    <br><small class="u-legal">HoneyBook and Dubsado are trademarks of their owners. Unsubbed is independent and not affiliated with or endorsed by them.</small>
+  </footer>
+
+  <dialog id="u-settings">
+    <form method="dialog">
+      <h2>Settings</h2>
+      <label class="u-field">
+        <span>Appearance</span>
+        <select name="theme">
+          <option value="system">Match my device</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <div id="app-settings">
+        <hr>
+        <h3 class="cl-sub">Your business</h3>
+        <label class="u-field"><span>Name</span><input name="b-name" autocomplete="organization"></label>
+        <label class="u-field"><span>Email</span><input name="b-email" type="email" autocomplete="off"></label>
+        <label class="u-field"><span>Phone</span><input name="b-phone" type="tel" autocomplete="off"></label>
+        <label class="u-field"><span>Address</span><textarea name="b-address" rows="2"></textarea></label>
+        <label class="u-field"><span>Tax ID (optional)</span><input name="b-taxId" autocomplete="off"></label>
+        <div class="u-field">
+          <span>Logo (PNG or JPEG)</span>
+          <div class="cl-logo"><img id="logo-img" alt="Your logo" hidden>
+            <button type="button" class="u-btn" id="logo-add">Choose</button>
+            <button type="button" class="u-btn" id="logo-del" hidden>Remove</button></div>
+        </div>
+        <h3 class="cl-sub">For new paperwork</h3>
+        <div class="cl-two">
+          <label class="u-field"><span>Currency</span><select name="b-currency"></select></label>
+          <label class="u-field"><span>Tax %</span><input name="b-tax" type="number" min="0" max="100" step="any" inputmode="decimal"></label>
+        </div>
+        <label class="u-field"><span>How to pay you</span><textarea name="b-payNote" rows="2" placeholder="Bank details or your payment link"></textarea></label>
+      </div>
+      <hr>
+      <p class="u-note">Everything is stored only in this browser. Clearing it cannot be undone; save a copy first.</p>
+      <div class="u-row">
+        <button type="button" class="u-btn danger" data-clear>Clear data on this device</button>
+        <button class="u-btn primary">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="u-toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="kit.js"></script>
+  <script src="clients.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

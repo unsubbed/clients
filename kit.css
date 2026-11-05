@@ -1,0 +1,133 @@
+/* Unsubbed design kit. Shared by every app. Tokens first, then components.
+   Each app sets ONLY its signature color in app.css:
+     :root { --app: #0f9d76; --app-dark: #3ddba8; }
+   Everything else (tints, buttons, header, glow) is derived from it. */
+:root {
+  --app: #1f5c4a;          /* app signature color, light mode (override per app) */
+  --app-dark: #6fc3a5;     /* app signature color, dark mode (override per app) */
+
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --ink: #15191a;
+  --muted: #5d6766;
+  --line: #e7e3dc;
+  --accent: var(--app);
+  --accent-ink: #ffffff;
+  --brand: #f2a65a;        /* Unsubbed orange: Support heart + logo slash */
+  --danger: #c62828;
+
+  --radius: 14px;
+  --shadow: 0 1px 2px rgb(0 0 0 / .05), 0 12px 32px -8px rgb(0 0 0 / .12);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1213; --surface: #171b1c; --ink: #f1eee8; --muted: #9ba5a3;
+    --line: #283032; --accent: var(--app-dark); --accent-ink: #0b0e0f; --danger: #ff8a80;
+    color-scheme: dark;
+  }
+  :root:not([data-theme="light"]) { --accent-strong: var(--accent); }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1213; --surface: #171b1c; --ink: #f1eee8; --muted: #9ba5a3;
+  --line: #283032; --accent: var(--app-dark); --accent-ink: #0b0e0f; --danger: #ff8a80;
+  color-scheme: dark;
+}
+:root[data-theme="dark"] { --accent-strong: var(--accent); }
+:root {
+  --accent-soft: color-mix(in oklab, var(--accent) 12%, var(--surface));
+  /* Readable version of the app color for text and filled buttons (>= 4.5:1). Light mode darkens it. */
+  --accent-strong: color-mix(in oklab, var(--accent) 80%, black);
+  --accent-line: color-mix(in oklab, var(--accent) 35%, var(--line));
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100dvh; display: flex; flex-direction: column;
+  color: var(--ink); font: 16px/1.5 var(--font);
+  background:
+    radial-gradient(60rem 28rem at 100% -10%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%),
+    radial-gradient(40rem 22rem at -10% 110%, color-mix(in oklab, var(--accent) 9%, transparent), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+}
+:focus-visible { outline: 3px solid color-mix(in oklab, var(--accent) 60%, transparent); outline-offset: 2px; }
+a { color: var(--accent-strong); }
+::selection { background: color-mix(in oklab, var(--accent) 28%, transparent); }
+
+/* Header: frosted bar with an app-colored stripe */
+.u-bar {
+  display: flex; align-items: center; gap: .5rem; padding: .625rem 1rem;
+  background: color-mix(in oklab, var(--surface) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line); box-shadow: inset 0 4px 0 var(--accent);
+  position: sticky; top: 0; z-index: 10;
+}
+.u-brand { display: flex; align-items: center; gap: .625rem; margin-right: auto; min-width: 0; color: inherit; text-decoration: none; }
+.u-brand img { width: 32px; height: 32px; flex: none; }
+.u-brand span {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-weight: 800; font-size: 1.125rem; letter-spacing: -.02em; color: var(--accent-strong);
+}
+
+/* Main + footer */
+main { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: 1.75rem 1rem; }
+.u-foot { padding: 1.25rem 1rem; text-align: center; color: var(--muted); font-size: .875rem; }
+.u-foot a { font-weight: 600; }
+.u-legal { display: inline-block; margin-top: .25rem; font-size: .75rem; opacity: .8; }
+
+/* Buttons: pills */
+.u-btn {
+  display: inline-flex; align-items: center; gap: .375rem; min-height: 40px; padding: 0 1rem;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+  color: var(--ink); font: inherit; font-size: .9375rem; font-weight: 600; cursor: pointer; text-decoration: none;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.u-btn:hover { border-color: var(--accent-line); background: var(--accent-soft); }
+.u-btn:active { transform: translateY(1px); }
+.u-btn svg { width: 18px; height: 18px; flex: none; }
+.u-btn.primary { background: var(--accent-strong); border-color: var(--accent-strong); color: var(--accent-ink); box-shadow: 0 6px 16px -6px var(--accent); }
+.u-btn.primary:hover { background: color-mix(in oklab, var(--accent-strong) 88%, black); }
+.u-btn.support svg { color: var(--brand); fill: var(--brand); }
+.u-btn.danger { color: var(--danger); border-color: currentColor; }
+.u-btn.icon { padding: 0; width: 40px; justify-content: center; }
+@media (max-width: 560px) { .u-bar .u-btn .label { display: none; } .u-bar .u-btn { padding: 0; width: 40px; justify-content: center; } }
+
+/* Form fields */
+.u-field { display: grid; gap: .25rem; margin-bottom: 1rem; }
+.u-field > span { font-size: .875rem; font-weight: 600; color: var(--muted); }
+input, select, textarea {
+  font: inherit; color: inherit; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: .5rem .75rem; min-height: 40px;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent); }
+textarea { resize: vertical; width: 100%; }
+
+/* Card */
+.u-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); }
+.u-card.accent { border-color: var(--accent-line); background: linear-gradient(var(--accent-soft), var(--surface) 60%); }
+
+/* Chip: small app-colored label */
+.u-chip { display: inline-flex; align-items: center; gap: .25rem; padding: .125rem .625rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent-strong); font-size: .8125rem; font-weight: 700; }
+
+/* Dialog */
+dialog {
+  border: 1px solid var(--line); border-radius: 20px; padding: 1.5rem;
+  background: var(--surface); color: var(--ink); width: min(460px, calc(100vw - 2rem)); box-shadow: var(--shadow);
+}
+dialog::backdrop { background: rgb(0 0 0 / .45); backdrop-filter: blur(2px); }
+dialog h2 { margin: 0 0 1rem; font-size: 1.25rem; letter-spacing: -.01em; }
+dialog hr { border: 0; border-top: 1px solid var(--line); margin: 1.25rem 0; }
+.u-row { display: flex; gap: .5rem; justify-content: flex-end; flex-wrap: wrap; }
+.u-note { font-size: .8125rem; color: var(--muted); margin: .25rem 0 .75rem; }
+
+/* Toast */
+.u-toast {
+  position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+  background: var(--ink); color: var(--bg); padding: .625rem 1.125rem; border-radius: 999px;
+  font-size: .9375rem; font-weight: 600; box-shadow: var(--shadow); max-width: calc(100vw - 2rem);
+}
+.u-toast[hidden] { display: none; }
